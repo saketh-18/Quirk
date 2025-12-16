@@ -1,0 +1,12 @@
+/* @import "tailwindcss"; */
+/* @import "tailwindcss/preflight"; */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* @config "../tailwind.config.ts"; */
+
+/*
+Source - https://stackoverflow.com/a/79462675
+Posted by nayemalways, modified by community. See post 'Timeline' for change history
+Retrieved 2025-12-14, License - CC BY-SA 4.0
+*/
