@@ -1,12 +1,11 @@
-import { create } from "zustand";
+import { create } from "zustand"
 
-interface userState {
+interface usernameState {
     username : string,
-    setUsername : (arg : string) => void,
+    setUsername : (arg : string) => void
 }
 
-export const usernameStore = create<userState>()((set) => ({
+export const usernameStore = create<usernameState>()((set) => ({
     username : "",
-    setUsername : (newUsername :string) => set({username : newUsername})
+    setUsername : (username : string) => set({username})
 }))
-

@@ -62,7 +62,8 @@ class MessageHandler:
                     await receiver.send_json({
                         "type":"system",
                         "data" : {
-                            "message" : "Partner Disconnected, start a new chat or exit the app"
+                            "message" : "Partner Disconnected, start a new chat or exit the app",
+                            "action" : "got_skipped"
                         }
                     })
             return True;
@@ -162,7 +163,11 @@ class MessageHandler:
                 self.matcher.rooms.pop(room_id, None)
                 self.matcher.user_to_rooms.pop(partner, None)
                 try:
-                    await partner.send_json({"system": "Partner disconnected"})
+                    await partner.send_json({"type" : "system",
+                                             "data" : {
+                                                 "message" : "Partner disconnected",
+                                                 "action" : "got_skipped"
+                                                 }})
                 except:
                     pass
             if skipped:
@@ -176,16 +181,18 @@ class MessageHandler:
         except KeyError as e:
             await websocket.send_json({
                 "type": "error",
+                "data" : {
                 "message": f"Missing required field: {e}"
-            })
+            }})
             return
 
         session = connection_store.sessions.get(websocket)
         if not session or not session["is_authenticated"]:
             await websocket.send_json({
                 "type": "error",
+                "data" : {
                 "message": "Authentication required"
-            })
+            }})
             return
 
         sender_id = session["uid"]
@@ -196,8 +203,9 @@ class MessageHandler:
         except (ValueError, TypeError) as e:
             await websocket.send_json({
                 "type": "error",
+                "data" : {
                 "message": f"Invalid sender_id format: {str(e)}"
-            })
+            }})
             return
 
         try:
@@ -205,8 +213,9 @@ class MessageHandler:
         except (ValueError, TypeError) as e:
             await websocket.send_json({
                 "type": "error",
+                "data" : {
                 "message": f"Invalid connection_id format: {str(e)}"
-            })
+            }})
             return
 
         try:
@@ -231,8 +240,9 @@ class MessageHandler:
             if not receiver_id:
                 await websocket.send_json({
                     "type": "error",
+                    "data" : {
                     "message": "Could not find receiver for this connection"
-                })
+                }})
                 return
 
             # 3. realtime delivery if online
@@ -263,8 +273,9 @@ class MessageHandler:
             print(traceback.format_exc())
             await websocket.send_json({
                 "type": "error",
+                "data" : {
                 "message": f"Failed to send message: {str(e)}"
-            })
+            }})
 
     async def send_saved_chat_confirmation(self, websocket, receiver_id):
         receiver_websocket = self.matcher.active_users.get(receiver_id)

@@ -16,8 +16,21 @@ from database.models.user import User
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from routers.auth import decode_fastapi_users_jwt, fastapi_users, auth_backend, UserRead, UserCreate, get_token_payload
+from fastapi.middleware.cors import CORSMiddleware
+
+origins = ["http://localhost:3000"]
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+on_test = True
 
 # logging.getLogger("uvicorn.error").setLevel(logging.WARNING)
 # logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
@@ -44,7 +57,7 @@ app.include_router(messages.router);
 
 async def heartbeat(websocket : WebSocket, session_state : dict):
     try:
-        while True:
+        while not on_test:
             await websocket.send_json({"type": "ping"})
             await asyncio.sleep(20);
             if time.time() - session_state["last_pong"] > 1200:
@@ -140,8 +153,9 @@ async def websocket_handler(websocket : WebSocket):
             except (ValueError, TypeError) as e:
                 await websocket.send_json({
                     "type": "error", 
+                    "data" : {
                     "message": f"Invalid connection_id format: {str(e)}"
-                })
+                }})
                 await websocket.close(code=1008, reason="Invalid connection_id")
                 return
 
@@ -152,8 +166,9 @@ async def websocket_handler(websocket : WebSocket):
             except (ValueError, TypeError) as e:
                 await websocket.send_json({
                     "type": "error",
+                    "data" : {
                     "message": f"Invalid user_id format: {str(e)}"
-                })
+                }})
                 await websocket.close(code=1008, reason="Invalid user_id")
                 return
 
@@ -170,8 +185,9 @@ async def websocket_handler(websocket : WebSocket):
             if not other_user:
                 await websocket.send_json({
                     "type": "error",
+                    "data" : {
                     "message": "Connection not found or you don't have access to this connection"
-                })
+                }})
                 await websocket.close(code=1008, reason="Connection not found")
                 return
 
