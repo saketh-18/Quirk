@@ -27,7 +27,7 @@ export default function ChatBox({
 
     const messages = messageStore((state) => state.messages);
     function scrollToBottom() {
-        messageRef.current?.scrollIntoView({behaviour : "smooth"});
+        messageRef.current?.scrollIntoView({behavior : "smooth"});
     }
 
     useLayoutEffect(() => {

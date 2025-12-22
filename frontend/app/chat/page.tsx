@@ -19,6 +19,8 @@ export default function Page() {
   // const [messages, setMessages] = useState<Message[]>([]);
   const [currentMsg, setCurrentMsg] = useState("");
   const [ws, setWs] = useState<WebSocket | null>();
+  const [savedWs, setSavedWs] = useState<WebSocket | null>(null);
+  const [activeSavedConnectionId, setActiveSavedConnectionId] = useState<string | null>(null);
 
   // const [pairedTo, setPairedTo] = useState("");
   const pairedTo = pairedStore((state) => state.pairedTo);
@@ -100,14 +102,31 @@ export default function Page() {
     e.preventDefault();
     if (!currentMsg.trim()) return;
 
-    ws?.send(
-      JSON.stringify({
-        type: "chat",
-        data: {
-          message: currentMsg,
-        },
-      })
-    );
+    if (uiState === "saved_chat") {
+      if (!savedWs || savedWs.readyState !== WebSocket.OPEN || !activeSavedConnectionId) {
+        return;
+      }
+
+      savedWs.send(
+        JSON.stringify({
+          type: "chat",
+          context: "saved",
+          data: {
+            connection_id: activeSavedConnectionId,
+            message: currentMsg,
+          },
+        })
+      );
+    } else {
+      ws?.send(
+        JSON.stringify({
+          type: "chat",
+          data: {
+            message: currentMsg,
+          },
+        })
+      );
+    }
 
     setMessages({
       type: "chat",
@@ -153,7 +172,16 @@ export default function Page() {
       <div className="relative z-10 mx-auto flex h-[calc(100vh-56px)] max-w-[1600px]">
         {/* ================= SAVED CHATS ================= */}
         <div className="flex flex-col justify-between border-r border-border-dark bg-bg-dark/60">
-          <SavedChats />
+          <SavedChats
+            onSavedChatOpen={(connectionId, socket) => {
+              // Close previous saved websocket if we switch chats
+              if (savedWs && savedWs !== socket) {
+                savedWs.close();
+              }
+              setSavedWs(socket);
+              setActiveSavedConnectionId(socket ? connectionId : null);
+            }}
+          />
           <div className="flex flex-col gap-2 mb-3 mx-2">
             {uiState === "chatting" && (
               <>
@@ -172,7 +200,16 @@ export default function Page() {
             {
               uiState === "saved_chat" && 
               <button
-                  onClick={() => setUiState("form")}
+                  onClick={() => {
+                    // Leaving saved chat: close websocket and clear messages
+                    if (savedWs) {
+                      savedWs.close();
+                      setSavedWs(null);
+                      setActiveSavedConnectionId(null);
+                    }
+                    setMessages([]);
+                    setUiState("form");
+                  }}
                   className="rounded-full bg-surface-highlight p-4 shadow-sm hover:shadow-accent border-1 border-surface-highlight"
                 >Random Chat</button>
             }

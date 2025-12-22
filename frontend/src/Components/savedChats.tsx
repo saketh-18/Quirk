@@ -2,52 +2,100 @@ import { loginStore } from "@/stores/login-store";
 import { messageStore } from "@/stores/message-store";
 import { savedChatsStore } from "@/stores/savedChats-store";
 import { uiStateStore } from "@/stores/uiState-store";
-import React, { useEffect, useState } from "react";
+import { usernameStore } from "@/stores/user-store";
+import React, { useEffect } from "react";
 
-export default function SavedChats() {
+interface SavedChatsProps {
+  onSavedChatOpen?: (connectionId: string, socket: WebSocket | null) => void;
+}
+
+export default function SavedChats({ onSavedChatOpen }: SavedChatsProps) {
   const savedChats = savedChatsStore((state) => state.savedChats);
   const isLoggedIn = loginStore((state) => state.isLoggedIn);
   const setSavedChats = savedChatsStore((state) => state.setSavedChats);
-  const [connId, setConnId] = useState("");
-  const setMessages =  messageStore((state) => state.setMessages)
+  const setMessages = messageStore((state) => state.setMessages);
   const setUiState = uiStateStore((state) => state.setUiState);
+  const username = usernameStore((state) => state.username);
 
-  useEffect(() => {
-    async function getMessages(connId: string) {
-      if (connId.trim().length == 0) return;
-      const access_token = localStorage.getItem("access_token");
-      // if (access_token?.length == 0) return;
-      setUiState("saved_chat");
-      const queryParams = new URLSearchParams({
-        connection_id: connId,
-      });
-      const res = await fetch(`http://localhost:8000/messages?${queryParams}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      });
-      if (res.ok) {
-        const rawMessages = await res.json();
-        console.log(rawMessages);
-        const cleanedMessages = rawMessages.map((msg) => ({
-          type: "chat",
-          contents: msg.contents,
-          sender: msg.sender_username,
-          time_stamp: new Date(msg.created_at).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        }));
-        setMessages(cleanedMessages);
-        console.log(cleanedMessages)
-      }
+  async function openSavedChat(connectionId: string) {
+    if (connectionId.trim().length === 0) return;
+
+    const access_token = localStorage.getItem("access_token");
+    if (!access_token) return;
+
+    // Switch UI to saved chat view
+    setUiState("saved_chat");
+
+    // 1) Fetch existing messages for this saved chat
+    const queryParams = new URLSearchParams({
+      connection_id: connectionId,
+    });
+    const res = await fetch(`http://localhost:8000/messages?${queryParams}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+    if (res.ok) {
+      const rawMessages = await res.json();
+      console.log(rawMessages);
+      const cleanedMessages = rawMessages.map((msg: any) => ({
+        type: "chat",
+        contents: msg.contents,
+        // format like live chat: show my own messages as "you"
+        sender: msg.sender_username === username ? "you" : msg.sender_username,
+        time_stamp: new Date(msg.created_at).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      }));
+      // Replace the current messages with this saved chat
+      setMessages(cleanedMessages);
+      console.log(cleanedMessages);
     }
 
+    // 2) Open websocket for realtime saved-chat messaging
+    try {
+      const socket = new WebSocket(
+        `ws://localhost:8000/ws?username=${encodeURIComponent(
+          username
+        )}&mode=saved&connection_id=${encodeURIComponent(
+          connectionId
+        )}&token=${encodeURIComponent(access_token)}`
+      );
 
+      socket.onopen = () => {
+        onSavedChatOpen?.(connectionId, socket);
+      };
 
-    getMessages(connId);
-  }, [connId]);
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log("saved chat ws message", data);
+
+        if (data.type === "chat" && data.data?.message) {
+          setMessages({
+            type: "chat",
+            contents: data.data.message,
+            sender: data.data.sender,
+            time_stamp: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          });
+        }
+      };
+
+      socket.onclose = () => {
+        onSavedChatOpen?.(connectionId, null);
+      };
+
+      socket.onerror = () => {
+        socket.close();
+      };
+    } catch (err) {
+      console.error("failed to open saved chat websocket", err);
+    }
+  }
 
   useEffect(() => {
     async function fetchChats() {
@@ -82,7 +130,9 @@ export default function SavedChats() {
           {savedChats.map((chat, ind) => (
             <div
               key={ind}
-              onClick={() => setConnId(chat.connection_id)}
+              onClick={() => {
+                openSavedChat(chat.connection_id);
+              }}
               className="rounded-lg border border-border-dark p-3 hover:bg-surface-highlight transition cursor-pointer"
             >
               <p className="text-sm text-text-main">{chat.username}</p>

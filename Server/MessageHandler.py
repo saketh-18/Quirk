@@ -76,7 +76,7 @@ class MessageHandler:
                         await receiver.send_json({
                             "type" : "system",
                             "data" : {
-                                "action" : "save_reqeust",
+                                "action" : "save_request",
                                 "message" : "do you want to save this chat for future"
                             }
                         })

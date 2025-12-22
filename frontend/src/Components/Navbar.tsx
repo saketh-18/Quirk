@@ -30,6 +30,7 @@ export default function Navbar() {
     if(res.status == 204){
       console.log("logged out succesfully");
       setIsLoggedIn(false);
+      localStorage.clear()
       router.push("/login");
     }
   }

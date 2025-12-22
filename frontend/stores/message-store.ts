@@ -9,10 +9,18 @@ interface Message {
 
 interface MessageStoreState {
     messages : Message[],
-    setMessages : (arg : Message) => void
+    setMessages : (arg : Message | Message[]) => void
 }
 
 export const messageStore = create<MessageStoreState>()((set) => ({
     messages : [],
-    setMessages : (message) => set((state) => ({ messages : [...state.messages, message]}))
+    setMessages : (messageOrMessages) =>
+        set((state) => {
+            // If we receive an array (e.g. loading a saved chat), replace the list
+            if (Array.isArray(messageOrMessages)) {
+                return { messages: messageOrMessages };
+            }
+            // Otherwise, append a single incoming message (live chat)
+            return { messages: [...state.messages, messageOrMessages] };
+        }),
 }))
