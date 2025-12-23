@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Navbar from "../../src/components/Navbar";
+import Navbar from "@components/Navbar";
 import { useRouter } from "next/navigation";
-import { loginStore } from "../../stores/login-store";
-import { usernameStore } from "../../stores/user-store";
-import { uiStateStore } from "../../stores/uiState-store";
+import { loginStore } from "@/stores/login-store";
+import { usernameStore } from "@/stores/user-store";
+import { uiStateStore } from "@/stores/uiState-store";
 
 export default function Login() {
   const [email, setEmail] = useState("");
