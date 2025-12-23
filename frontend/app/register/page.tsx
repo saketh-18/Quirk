@@ -20,7 +20,7 @@ export default function Register() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:8000/auth/register", {
+      const res = await fetch("https://echo-l8ml.onrender.com/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,7 +42,7 @@ export default function Register() {
 
       // Redirect to login after successful register
       router.push("/login");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {

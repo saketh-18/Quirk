@@ -31,12 +31,15 @@ export default function SavedChats({ onSavedChatOpen }: SavedChatsProps) {
     const queryParams = new URLSearchParams({
       connection_id: connectionId,
     });
-    const res = await fetch(`http://localhost:8000/messages?${queryParams}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
+    const res = await fetch(
+      `https://echo-l8ml.onrender.com/messages?${queryParams}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
     if (res.ok) {
       const rawMessages = await res.json();
       console.log(rawMessages);
@@ -59,7 +62,7 @@ export default function SavedChats({ onSavedChatOpen }: SavedChatsProps) {
     // 2) Open websocket for realtime saved-chat messaging
     try {
       const socket = new WebSocket(
-        `ws://localhost:8000/ws?username=${encodeURIComponent(
+        `wss://echo-l8ml.onrender.com/ws?username=${encodeURIComponent(
           username
         )}&mode=saved&connection_id=${encodeURIComponent(
           connectionId
@@ -119,7 +122,7 @@ export default function SavedChats({ onSavedChatOpen }: SavedChatsProps) {
     async function fetchChats() {
       // we need access_token to fetch saved_chats
       const access_token = localStorage.getItem("access_token");
-      const res = await fetch("http://localhost:8000/connections", {
+      const res = await fetch("https://echo-l8ml.onrender.com/connections", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${access_token}`,

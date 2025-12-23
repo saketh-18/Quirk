@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 
 /**
  * Quirk – Landing Page
@@ -10,6 +11,14 @@ import Link from "next/link";
  */
 
 export default function Home() {
+  useEffect(() => {
+    async function wakeUpRender(){
+      const res = await fetch("https://echo-l8ml.onrender.com/test");
+      const data = await res.json(); 
+      console.log(data);
+    }
+    wakeUpRender();
+  }, [])
   return (
     <main className="relative min-h-screen overflow-hidden bg-bg-dark font-display">
 

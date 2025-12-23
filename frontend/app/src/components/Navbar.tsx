@@ -33,7 +33,7 @@ export default function Navbar() {
   async function logout() {
     setIsLoggedIn(false);
     const access_token = localStorage.getItem("access_token");
-    const res = await fetch("http://localhost:8000/auth/logout", {
+    const res = await fetch("https://echo-l8ml.onrender.com/auth/logout", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${access_token}`,

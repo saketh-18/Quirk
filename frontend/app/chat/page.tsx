@@ -49,7 +49,7 @@ export default function Page() {
       : "";
 
     const socket = new WebSocket(
-      `ws://localhost:8000/ws?username=${encodeURIComponent(
+      `wss://echo-l8ml.onrender.com/ws?username=${encodeURIComponent(
         username
       )}&mode=random${tokenParam}`
     );

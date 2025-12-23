@@ -23,7 +23,7 @@ export default function Login() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:8000/auth/login", {
+      const res = await fetch("https://echo-l8ml.onrender.com/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -40,7 +40,7 @@ export default function Login() {
 
       const data = await res.json();
 
-      const result = await fetch("http://localhost:8000/username", {
+      const result = await fetch("https://echo-l8ml.onrender.com/username", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${data.access_token}`,
@@ -62,7 +62,7 @@ export default function Login() {
       router.push("/chat");
       console.log("Login successful");
       setIsLoggedIn(true);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {

@@ -5,6 +5,7 @@ from datetime import datetime
 import uuid
 import asyncio
 import time
+from routers import test
 from routers import username
 from services.message_service import MessageService
 from routers import messages
@@ -58,6 +59,10 @@ app.include_router(messages.router);
 
 # route for getting username
 app.include_router(username.router);
+
+#test route to wake up render
+app.include_router(test.router)
+
 
 async def heartbeat(websocket : WebSocket, session_state : dict):
     try:
