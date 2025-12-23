@@ -15,6 +15,7 @@ import { usernameStore } from "@/stores/user-store";
 import React, { FormEvent, useEffect, useState } from "react";
 import { connectionStore } from "@/stores/connection-store";
 import Swal from "sweetalert2";
+import { InterestStore } from "@/stores/interest-store";
 
 export default function Page() {
   // const [messages, setMessages] = useState<Message[]>([]);
@@ -35,6 +36,8 @@ export default function Page() {
 
   // const messages = messageStore((state) => state.messages);
   const setMessages = messageStore((state) => state.setMessages);
+  
+  const interests = InterestStore((state) => state.interests);
 
   useEffect(() => {
     if (uiState !== "searching") return;
@@ -48,10 +51,12 @@ export default function Page() {
       ? `&token=${encodeURIComponent(access_token)}`
       : "";
 
+    const interest_params = interests.trim().length > 0 ? interests : "";
+
     const socket = new WebSocket(
       `wss://echo-l8ml.onrender.com/ws?username=${encodeURIComponent(
         username
-      )}&mode=random${tokenParam}`
+      )}&mode=random${tokenParam}&interests=${interests}`
     );
 
     socket.onopen = () => setWs(socket);
