@@ -20,7 +20,7 @@ export default function ChatBox({
   currentMsg,
   setCurrentMsg,
 }: chatProps) {
-  const messageRef = useRef(null);
+  const messageRef = useRef<HTMLDivElement>(null);
 
   const messages = messageStore((state) => state.messages);
   function scrollToBottom() {
