@@ -4,6 +4,7 @@ import { messageStore } from "@/stores/message-store";
 import { uiStateStore } from "@/stores/uiState-store";
 import { pairedStore } from "@/stores/paired-store";
 import { loginStore } from "@/stores/login-store";
+import { connectionStore } from "@/stores/connection-store";
 
 export const useChatSocket = (username: string, interests: string) => {
   const [randomWs, setRandomWs] = useState<WebSocket | null>(null);
@@ -138,6 +139,10 @@ export const useChatSocket = (username: string, interests: string) => {
     socket.onopen = () => {
       randomWsRef.current = socket;
       setRandomWs(socket);
+      // Clear messages when a fresh random connection opens
+      setMessages([]);
+      // expose to global connection store so other UI (Navbar) can skip on navigation
+      connectionStore.getState().setRandomWs(socket);
     };
     socket.onmessage = (e) => handleMessage(e, false);
     socket.onerror = (err) => {
@@ -149,6 +154,11 @@ export const useChatSocket = (username: string, interests: string) => {
       // clear both ref and state
       if (randomWsRef.current === socket) randomWsRef.current = null;
       setRandomWs(null);
+      // clear global store if it still points to this socket
+      try {
+        const cs = connectionStore.getState();
+        if (cs.randomWs === socket) cs.setRandomWs(null);
+      } catch {}
       // If we were chatting, the close likely means partner disconnected
       if (uiState !== "searching") {
         setUiState("got_skipped");
@@ -169,6 +179,56 @@ export const useChatSocket = (username: string, interests: string) => {
     // intentionally excluding handleMessage ref to avoid re-creating socket on message handler change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uiState, username, interests]);
+
+  // In useChatSocket.ts, update the cleanup effect
+  // Cleanup sockets on unmount. Use the store directly when deciding
+  // whether to move back to `searching` so we don't accidentally override
+  // a `got_skipped` state set by an onclose handler (which triggers a
+  // uiState change and would otherwise run this effect's cleanup with
+  // the previous uiState value).
+  useEffect(() => {
+    return () => {
+      // Clean up random chat WebSocket
+      if (randomWsRef.current) {
+        try {
+          randomWsRef.current.close();
+        } catch (e) {
+          console.error("Error closing random chat WebSocket:", e);
+        }
+        randomWsRef.current = null;
+        setRandomWs(null);
+      }
+
+      // Clean up saved chat WebSocket
+      if (savedWsRef.current) {
+        try {
+          savedWsRef.current.close();
+        } catch (e) {
+          console.error("Error closing saved chat WebSocket:", e);
+        }
+        savedWsRef.current = null;
+        setSavedWsState(null);
+      }
+
+      // Decide whether to return to searching. Read current uiState
+      // directly from the zustand store so we don't use a stale value
+      // captured by the effect closure.
+      try {
+        const currentUiState = uiStateStore.getState().uiState;
+        if (currentUiState === "chatting" || currentUiState === "saved_chat") {
+          // Only move back to searching if the state hasn't already
+          // been set to something else (e.g. `got_skipped`).
+          setUiState("searching");
+        }
+      } catch (e) {
+        // Fallback: if we can't read the store, be conservative and
+        // don't force a UI transition.
+        console.warn("Could not read uiState store during cleanup:", e);
+      }
+    };
+    // run only on mount/unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const sendChatMessage = (msg: string) => {
     const payload = {
@@ -218,6 +278,8 @@ export const useChatSocket = (username: string, interests: string) => {
   const setSavedWs = (ws: WebSocket | null) => {
     savedWsRef.current = ws;
     setSavedWsState(ws);
+    // Clear messages when opening a saved-chat socket
+    if (ws) setMessages([]);
   };
 
   return {

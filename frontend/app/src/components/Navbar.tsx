@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { loginStore } from "@/stores/login-store";
 import { usernameStore } from "@/stores/user-store";
 import Link from "next/link";
@@ -16,6 +17,18 @@ export default function Navbar() {
   const isLoggedIn = loginStore((state) => state.isLoggedIn);
   const setIsLoggedIn = loginStore((state) => state.setIsLoggedIn);
   const router = useRouter();
+  // const pathname = usePathname();
+
+  // If user navigates to public pages while a random connection is open,
+  // inform the partner by sending a skip and close the socket.
+  // useEffect(() => {
+  //   if (!pathname) return;
+  //   if (["/", "/login", "/register"].includes(pathname)) {
+  //     try {
+  //       connectionStore.getState().skipRandom();
+  //     } catch (e) {}
+  //   }
+  // }, [pathname]);
 
   async function logout() {
     setIsLoggedIn(false);
@@ -49,8 +62,31 @@ export default function Navbar() {
     >
       <div className="mx-auto flex h-14 max-w-[1600px] items-center justify-between px-6">
         {/* Brand */}
-        <Link href={"/"} className="text-lg font-serif text-text-main">
-          Quirk
+        <Link href={"/"} className="relative inline-block">
+          {/* Soft echo layer */}
+          <span
+            className="
+      absolute
+    left-0
+    top-0
+    -z-10
+    translate-x-[2px]
+    translate-y-[2px]
+    text-accent/30
+    text-3xl
+    font-serif
+    font-bold
+    select-none
+    animate-[echoFade_0.6s_ease-out]
+    "
+          >
+            Echo
+          </span>
+
+          {/* Main brand */}
+          <span className="text-3xl font-serif font-bold text-text-main">
+            Echo
+          </span>
         </Link>
 
         <div className="flex gap-4 items-center">

@@ -15,6 +15,7 @@ export default function SavedChats({ onSavedChatOpen }: SavedChatsProps) {
   const setSavedChats = savedChatsStore((state) => state.setSavedChats);
   const setMessages = messageStore((state) => state.setMessages);
   const setUiState = uiStateStore((state) => state.setUiState);
+  const uiState = uiStateStore((state) => state.uiState);
   const username = usernameStore((state) => state.username);
 
   async function openSavedChat(connectionId: string) {
@@ -100,6 +101,10 @@ export default function SavedChats({ onSavedChatOpen }: SavedChatsProps) {
 
       socket.onclose = () => {
         onSavedChatOpen?.(connectionId, null);
+        // If the user was viewing this saved chat, show got_skipped
+        if (uiState === "saved_chat") {
+          setUiState("got_skipped");
+        }
       };
 
       socket.onerror = () => {
@@ -126,7 +131,7 @@ export default function SavedChats({ onSavedChatOpen }: SavedChatsProps) {
       }
     }
     fetchChats();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn]);
 
   return (

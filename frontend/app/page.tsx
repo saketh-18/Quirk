@@ -23,9 +23,39 @@ export default function Home() {
         <div className="flex w-full max-w-xl flex-col gap-8">
 
           {/* Brand */}
-          <div className="text-accent text-4xl font-serif font-bold">
-            Quirk
-          </div>
+<div className="relative inline-block">
+
+  {/* Soft echo layer */}
+  <span
+    className="
+      absolute
+    left-0
+    top-0
+    -z-10
+    translate-x-[2px]
+    translate-y-[2px]
+    text-accent/30
+    text-4xl
+    font-serif
+    font-bold
+    select-none
+    animate-[echoFade_0.6s_ease-out]
+    "
+  >
+    Echo
+  </span>
+
+  {/* Main brand */}
+  <span className="text-4xl font-serif font-bold text-text-main">
+    Echo
+  </span>
+
+  {/* Brand whisper */}
+  <div className="mt-1 text-xs tracking-wide text-text-main/40">
+    conversations that return
+  </div>
+</div>
+
 
           {/* Hero line */}
           <h1 className="text-5xl leading-tight text-text-main">
@@ -69,7 +99,7 @@ export default function Home() {
           {/* Floating signals */}
           <AmbientBubble
             text="New match found"
-            className="top-[18%] left-[20%] animate-float-1"
+            className="top-[35%] left-[20%] animate-float-1"
             dot
           />
 
@@ -79,12 +109,12 @@ export default function Home() {
           />
 
           <AmbientBubble
-            text="Someone skipped"
+            text="Matched on Movies"
             className="bottom-[20%] left-[30%] animate-float-3"
           />
 
           <AmbientBubble
-            text="1,420 online"
+            text="Matched on Gaming"
             className="top-[8%] right-[30%] animate-float-4"
           />
         </div>

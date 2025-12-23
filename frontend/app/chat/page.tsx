@@ -13,6 +13,7 @@ import { pairedStore } from "@/stores/paired-store";
 import { uiStateStore } from "@/stores/uiState-store";
 import { usernameStore } from "@/stores/user-store";
 import React, { FormEvent, useEffect, useState } from "react";
+import { connectionStore } from "@/stores/connection-store";
 import Swal from "sweetalert2";
 
 export default function Page() {
@@ -214,14 +215,30 @@ export default function Page() {
         })
       );
     } else {
-      ws?.send(
-        JSON.stringify({
-          type: "chat",
-          data: {
-            message: currentMsg,
-          },
-        })
-      );
+      // prefer local ws, fall back to global connection store if local ref is missing
+      const globalWs = connectionStore?.getState?.().randomWs ?? null;
+      const sock = ws ?? globalWs;
+      if (!sock || sock.readyState !== WebSocket.OPEN) {
+        // socket not available for sending
+        setMessages({
+          type: "system",
+          contents: "Unable to send — connection not open.",
+          sender: "system",
+          time_stamp: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        });
+      } else {
+        sock.send(
+          JSON.stringify({
+            type: "chat",
+            data: {
+              message: currentMsg,
+            },
+          })
+        );
+      }
     }
 
     setMessages({
@@ -238,17 +255,16 @@ export default function Page() {
   }
 
   function skipHandler() {
-    if (uiState === "chatting") {
-      ws?.send(
-        JSON.stringify({
-          type: "system",
-          data: {
-            action: "skip",
-          },
-        })
-      );
-      setUiState("searching");
-    }
+    setMessages([]);
+    ws?.send(
+      JSON.stringify({
+        type: "system",
+        data: {
+          action: "skip",
+        },
+      })
+    );
+    setUiState("searching");
   }
 
   return (

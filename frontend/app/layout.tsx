@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Quirk",
+  title: "Echo",
   description: "Random Chat app++",
 };
 

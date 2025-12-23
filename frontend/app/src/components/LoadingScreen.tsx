@@ -2,13 +2,10 @@
 
 export default function LoadingScreen() {
   return (
-    <div className="h-full overflow-hidden">
-
-      <div className="relative flex h-[calc(100vh-56px)] w-screen items-center justify-center overflow-hidden bg-bg-dark">
-
+    <div className="flex-1 flex items-center justify-center w-full h-full overflow-hidden">
+      <div className="relative w-full h-full flex items-center justify-center bg-bg-dark">
         {/* ================= DOMINANT AMBIENT BACKGROUND ================= */}
         <div className="absolute inset-0">
-
           {/* Base gradient */}
           <div className="absolute inset-0 bg-gradient-to-br from-bg-dark via-surface to-bg-dark" />
 
@@ -23,7 +20,6 @@ export default function LoadingScreen() {
 
         {/* ================= MINIMAL CORE ================= */}
         <div className="relative z-10 flex flex-col items-center gap-6">
-
           {/* Loader core */}
           <div className="relative flex items-center justify-center">
             <div className="h-20 w-20 rounded-full border border-accent/30 animate-[pulseSoft_2.5s_ease-in-out_infinite]" />
@@ -32,12 +28,8 @@ export default function LoadingScreen() {
 
           {/* Text */}
           <div className="text-center space-y-1">
-            <p className="text-lg text-text-main">
-              Looking for someone
-            </p>
-            <p className="text-sm text-text-main/50">
-              stay for a moment
-            </p>
+            <p className="text-lg text-text-main">Looking for someone</p>
+            <p className="text-sm text-text-main/50">stay for a moment</p>
           </div>
         </div>
       </div>
