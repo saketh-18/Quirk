@@ -13,7 +13,7 @@ import { pairedStore } from "@/stores/paired-store";
 import { uiStateStore } from "@/stores/uiState-store";
 import { usernameStore } from "@/stores/user-store";
 import React, { FormEvent, useEffect, useState } from "react";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 export default function Page() {
   // const [messages, setMessages] = useState<Message[]>([]);

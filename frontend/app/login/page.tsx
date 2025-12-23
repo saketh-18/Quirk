@@ -5,6 +5,7 @@ import Navbar from "@/src/components/Navbar";
 import { useRouter } from "next/navigation";
 import { loginStore } from "@/stores/login-store";
 import { usernameStore } from "@/stores/user-store";
+import { uiStateStore } from "@/stores/uiState-store";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ export default function Login() {
   const router = useRouter(); //from next navigation
   const setIsLoggedIn = loginStore((state) => state.setIsLoggedIn);
   const setUsername = usernameStore((state) => state.setUsername);
+  const setUiState = uiStateStore((state) => state.setUiState)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,6 +59,7 @@ export default function Login() {
       localStorage.setItem("access_token", data.access_token);
       
       // Optional: redirect after login
+      setUiState("form")
       router.push("/chat");
       console.log("Login successful");
       setIsLoggedIn(true);
