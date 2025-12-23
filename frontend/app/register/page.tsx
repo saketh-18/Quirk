@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "@/src/components/Navbar";
+import Navbar from "../../src/components/Navbar";
 
 export default function Register() {
   const router = useRouter();
@@ -34,9 +34,7 @@ export default function Register() {
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(
-          err?.detail?.[0]?.msg || "Registration failed"
-        );
+        throw new Error(err?.detail?.[0]?.msg || "Registration failed");
       }
 
       const data = await res.json();
@@ -102,9 +100,7 @@ export default function Register() {
               className="w-full rounded-md bg-surface px-4 py-3 text-text-main placeholder:text-text-main/40 border border-border-dark focus:outline-none focus:ring-1 focus:ring-accent/30"
             />
 
-            {error && (
-              <p className="text-sm text-red-400">{error}</p>
-            )}
+            {error && <p className="text-sm text-red-400">{error}</p>}
 
             <button
               type="submit"

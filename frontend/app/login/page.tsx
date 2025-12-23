@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Navbar from "@/src/components/Navbar";
+import Navbar from "../../src/components/Navbar";
 import { useRouter } from "next/navigation";
-import { loginStore } from "@/stores/login-store";
-import { usernameStore } from "@/stores/user-store";
-import { uiStateStore } from "@/stores/uiState-store";
+import { loginStore } from "../../stores/login-store";
+import { usernameStore } from "../../stores/user-store";
+import { uiStateStore } from "../../stores/uiState-store";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -15,7 +15,7 @@ export default function Login() {
   const router = useRouter(); //from next navigation
   const setIsLoggedIn = loginStore((state) => state.setIsLoggedIn);
   const setUsername = usernameStore((state) => state.setUsername);
-  const setUiState = uiStateStore((state) => state.setUiState)
+  const setUiState = uiStateStore((state) => state.setUiState);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ export default function Login() {
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
-          "username" : email,
+          username: email,
           password,
         }),
       });
@@ -41,30 +41,28 @@ export default function Login() {
       const data = await res.json();
 
       const result = await fetch("http://localhost:8000/username", {
-        method : 'GET',
-        headers : {
-          'Authorization' : `Bearer ${data.access_token}`
-        }
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${data.access_token}`,
+        },
       });
-        
+
       const username_res = await result.json();
 
-      console.log(username_res)
+      console.log(username_res);
       setUsername(username_res.username);
       localStorage.setItem("username", username_res.username);
-      console.log(username_res.username)
-      
+      console.log(username_res.username);
 
       // Store token
       localStorage.setItem("access_token", data.access_token);
-      
+
       // Optional: redirect after login
-      setUiState("form")
+      setUiState("form");
       router.push("/chat");
       console.log("Login successful");
       setIsLoggedIn(true);
-      
-    } catch (err : any) {
+    } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -113,9 +111,7 @@ export default function Login() {
               className="w-full rounded-md bg-surface px-4 py-3 text-text-main placeholder:text-text-main/40 border border-border-dark focus:outline-none focus:ring-1 focus:ring-accent/30"
             />
 
-            {error && (
-              <p className="text-sm text-red-400">{error}</p>
-            )}
+            {error && <p className="text-sm text-red-400">{error}</p>}
 
             <button
               type="submit"

@@ -1,17 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import ChatBox from "@/src/components/ChatBox";
-import Form from "@/src/components/form";
-import LoadingScreen from "@/src/components/LoadingScreen";
-import Navbar from "@/src/components/Navbar";
-import PartnerFound from "@/src/components/PartnerFound";
-import PartnerSkipped from "@/src/components/PartnerSkipped";
-import SavedChats from "@/src/components/savedChats";
-import { messageStore } from "@/stores/message-store";
-import { pairedStore } from "@/stores/paired-store";
-import { uiStateStore } from "@/stores/uiState-store";
-import { usernameStore } from "@/stores/user-store";
+import ChatBox from "../../src/components/ChatBox";
+import Form from "../../src/components/form";
+import LoadingScreen from "../../src/components/LoadingScreen";
+import Navbar from "../../src/components/Navbar";
+import PartnerFound from "../../src/components/PartnerFound";
+import PartnerSkipped from "../../src/components/PartnerSkipped";
+import SavedChats from "../../src/components/savedChats";
+import { messageStore } from "../../stores/message-store";
+import { pairedStore } from "../../stores/paired-store";
+import { uiStateStore } from "../../stores/uiState-store";
+import { usernameStore } from "../../stores/user-store";
 import React, { FormEvent, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 

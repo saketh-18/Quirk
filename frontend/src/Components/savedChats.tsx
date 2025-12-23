@@ -1,8 +1,8 @@
-import { loginStore } from "@/stores/login-store";
-import { messageStore } from "@/stores/message-store";
-import { savedChatsStore } from "@/stores/savedChats-store";
-import { uiStateStore } from "@/stores/uiState-store";
-import { usernameStore } from "@/stores/user-store";
+import { loginStore } from "../../stores/login-store";
+import { messageStore } from "../../stores/message-store";
+import { savedChatsStore } from "../../stores/savedChats-store";
+import { uiStateStore } from "../../stores/uiState-store";
+import { usernameStore } from "../../stores/user-store";
 import React, { useEffect } from "react";
 
 interface SavedChatsProps {

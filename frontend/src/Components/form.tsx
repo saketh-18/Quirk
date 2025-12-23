@@ -1,50 +1,41 @@
 "use client";
 
-import { uiStateStore } from "@/stores/uiState-store";
-import { usernameStore } from "@/stores/user-store"
+import { uiStateStore } from "../../stores/uiState-store";
+import { usernameStore } from "../../stores/user-store";
 import React from "react";
-
 
 export default function Form() {
   const username = usernameStore((state) => state.username);
   const setUsername = usernameStore((state) => state.setUsername);
-  
+
   // const uiState = uiStateStore((state) => state.uiState);
   const setUiState = uiStateStore((state) => state.setUiState);
 
-  function handleSubmit(e : React.FormEvent<HTMLFormElement>){
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if(username.trim().length > 0){
+    if (username.trim().length > 0) {
       setUiState("searching");
     }
   }
 
   return (
     <main className="relative w-full h-full font-display overflow-hidden flex flex-col justify-center items-end">
-
       {/* Subtle grid — background texture, not decoration */}
       <div className="absolute inset-0 bg-grid opacity-50" />
 
       {/* Content */}
       <section className="relative z-10 mx-auto flex max-w-4xl items-center px-8">
         <div className="w-full max-w-md space-y-8 ">
-
           {/* Heading */}
           <div className="space-y-2">
-            <h1 className="text-3xl text-text-main">
-              Choose a name
-            </h1>
+            <h1 className="text-3xl text-text-main">Choose a name</h1>
             <p className="text-sm text-text-main/60">
-              This is how others will see you.  
-              It doesn’t have to be real.
+              This is how others will see you. It doesn’t have to be real.
             </p>
           </div>
 
           {/* Form */}
-          <form
-            onSubmit={(e) => handleSubmit(e)}
-            className="space-y-4"
-          >
+          <form onSubmit={(e) => handleSubmit(e)} className="space-y-4">
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
