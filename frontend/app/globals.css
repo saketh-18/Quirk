@@ -112,3 +112,43 @@ body {
     transform: scale(1);
   }
 }
+
+/* ================= SweetAlert — Quirk Theme ================= */
+
+.quirk-alert-popup {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(12px);
+}
+
+.quirk-alert-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.quirk-alert-text {
+  font-size: 0.9rem;
+  color: rgba(240, 248, 255, 0.65);
+}
+
+.quirk-alert-confirm {
+  background: #00ffc2;
+  color: #031114;
+  border-radius: 9999px;
+  padding: 0.6rem 1.4rem;
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+.quirk-alert-confirm:hover {
+  opacity: 0.9;
+}
+
+.quirk-alert-cancel {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(240, 248, 255, 0.8);
+  border-radius: 9999px;
+  padding: 0.6rem 1.4rem;
+}
