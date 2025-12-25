@@ -20,7 +20,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from routers.auth import decode_fastapi_users_jwt, fastapi_users, auth_backend, UserRead, UserCreate, get_token_payload
 from fastapi.middleware.cors import CORSMiddleware
 
-origins = ["http://localhost:3000", "https://echo-six-mocha.vercel.app/"]
+origins = ["http://localhost:3000", "https://echo-six-mocha.vercel.app"]
 
 app = FastAPI()
 
